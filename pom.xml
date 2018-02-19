@@ -12,6 +12,8 @@
     <maven.compiler.target>1.8</maven.compiler.target>
     <failOnMissingWebXml>false</failOnMissingWebXml>
     <arquillian.javaVmArguments>-Xmx512m -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=n</arquillian.javaVmArguments>
+    <version.jacoco>0.7.8</version.jacoco>
+    <version.arquillian_jacoco>1.0.0.Alpha9</version.arquillian_jacoco>
   </properties>
 
   <build>
@@ -71,6 +73,7 @@
       <plugin>
         <groupId>org.wildfly.plugins</groupId>
         <artifactId>wildfly-maven-plugin</artifactId>
+        <version>1.1.0.Alpha11</version>
         <configuration>
           <version>10.1.0.Final</version>
           <startup-timeout>600</startup-timeout>
@@ -86,6 +89,25 @@
             </users>
           </add-user>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>${version.jacoco}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>report</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
@@ -129,5 +151,33 @@
       <scope>test</scope>
       <type>pom</type>
     </dependency>
+    <dependency>
+      <groupId>org.jacoco</groupId>
+      <artifactId>org.jacoco.core</artifactId>
+      <version>${version.jacoco}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.arquillian.extension</groupId>
+      <artifactId>arquillian-jacoco</artifactId>
+      <version>${version.arquillian_jacoco}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>report</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+    </plugins>
+  </reporting>
 </project>
