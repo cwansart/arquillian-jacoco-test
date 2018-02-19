@@ -5,13 +5,17 @@ import org.hamcrest.core.IsEqual;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import javax.ws.rs.core.UriBuilder;
+import java.net.URI;
+import java.net.URL;
 
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -19,22 +23,20 @@ public class HelloResourceIT {
 
   @Deployment
   public static Archive<?> createDeployment() {
-    System.err.println("Inside createDeployment");
-    WebArchive archive = ShrinkWrap.create(WebArchive.class)
-            .addClass(HelloResource.class)
+    return ShrinkWrap.create(WebArchive.class)
+            .addClasses(JaxRsActivator.class, HelloResource.class)
             .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-    System.err.println(archive.toString(true));
-    return archive;
   }
 
+  @ArquillianResource
+  private URL baseURI;
+
   @Test
-  public void returnsHelloWorld() {
-    Assert.assertEquals(true, true);
-    /*
-    RestAssured.get("http://localhost:8080/code-coverage-test/api/hello")
+  public void returnsHelloWorld() throws Exception {
+    URI uri = UriBuilder.fromUri(baseURI.toURI()).path("api").path("hello").build();
+    RestAssured.get(uri)
             .then()
             .assertThat()
             .body("message", IsEqual.equalTo("hello world"));
-   */
   }
 }
